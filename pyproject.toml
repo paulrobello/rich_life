@@ -1,0 +1,93 @@
+[project]
+name = "rich_life"
+dynamic = ["version"]
+description = "Terminal-based life and ant simulation."
+url = "https://github.com/paulrobello/rich_life"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Paul Robello", email = "probello@gmail.com" }]
+maintainers = [{ name = "Paul Robello", email = "probello@gmail.com" }]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Environment :: Console",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Games/Entertainment :: Simulation",
+    "Typing :: Typed"
+]
+keywords = ["simulation", "terminal"]
+dependencies = [
+    "keyboard>=0.13.5",
+    "rich>=13.8.0",
+    "typer>=0.12.5",
+]
+
+packages = [
+    "src/rich_life"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/paulrobello/rich_life"
+Documentation = "https://github.com/paulrobello/rich_life/blob/main/README.md"
+Repository = "https://github.com/paulrobello/rich_life"
+Issues = "https://github.com/paulrobello/rich_life/issues"
+Discussions = "https://github.com/paulrobello/rich_life/discussions"
+Wiki = "https://github.com/paulrobello/rich_life/wiki"
+
+[project.scripts]
+rich_life = "rich_life.__main__:app"
+
+[build-system]
+requires = ["hatchling", "wheel"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "build>=1.2.1",
+    "twine>=5.1.1",
+    "black>=24.8.0",
+    "pylint>=3.2.7",
+    "pyright>=1.1.379",
+    "pre-commit>=3.8.0",
+    "pytest>=8.3.2",
+]
+
+[tool.hatch.version]
+path = "src/rich_life/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rich_life"]
+include = [
+    "*.py",
+    "py.typed",
+    "*.png",
+    "*.md",
+    "*.tcss",
+    "*.png",
+    "*.md",
+    "*.tcss"
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/rich_life",
+    "LICENSE",
+    "README.md",
+    "pyproject.toml"
+]
+exclude = [
+    "*.pyc",
+    "__pycache__",
+    "*.so",
+    "*.dylib"
+]
