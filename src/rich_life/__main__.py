@@ -6,6 +6,7 @@ Email: probello@gmail.com
 """
 
 import random
+import sys
 from enum import Enum
 from time import sleep
 from typing import Dict, Tuple, Optional
@@ -23,23 +24,41 @@ def_size = int(console.height / 2)
 
 app = typer.Typer()
 
-def get_key() -> Optional[bytes]:
+def get_key() -> Optional[str]:
     """
-    Get the key pressed by the user.
+    Get the key pressed by the user in a non-blocking manner.
+    Works on both Windows and Unix systems.
 
     Returns:
-        str: The key pressed by the user.
+        Optional[str]: The key pressed by the user, or None if no key was pressed.
     """
     try:
         import msvcrt
-
+        import sys
 
         if msvcrt.kbhit():
-            return msvcrt.getch()
-        else:
-            return None
-    except Exception as _:  # pylint: disable=broad-except
+            key = msvcrt.getch()
+            return key.decode('utf-8')
         return None
+    except ImportError:
+        # Unix systems
+        import sys
+        import select
+        import termios
+        import tty
+
+        def is_data():
+            return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
+
+        old_settings = termios.tcgetattr(sys.stdin)
+        try:
+            tty.setcbreak(sys.stdin.fileno())
+            if is_data():
+                key = sys.stdin.read(1)
+                return key
+            return None
+        finally:
+            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 
 class NeighborhoodRules(str, Enum):
     """
