@@ -21,7 +21,7 @@ from rich import print as rprint
 
 # Import modules for key handling
 if platform.system() == "Windows":
-    import msvcrt
+    import msvcrt  # pylint: disable=import-error
 else:
     import select
     import termios  # pylint: disable=import-error
