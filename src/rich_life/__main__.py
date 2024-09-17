@@ -18,6 +18,14 @@ from rich.table import Table
 from rich.text import Text
 from rich import print as rprint
 
+# Import modules for key handling
+try:
+    import msvcrt
+except ImportError:
+    import select
+    import termios
+    import tty
+
 console: Console = Console()
 
 def_size = int(console.height / 2)
@@ -101,9 +109,7 @@ class GameOfLife:
         Get the key pressed by the user in a non-blocking manner and handle it.
         Works on both Windows and Unix systems.
         """
-        try:
-            import msvcrt
-
+        if 'msvcrt' in sys.modules:
             if msvcrt.kbhit():
                 key = msvcrt.getch()
                 if key == b"\xe0":  # Arrow key prefix
@@ -118,12 +124,8 @@ class GameOfLife:
                         self.handle_key_press("right")
                 else:
                     self.handle_key_press(key.decode("utf-8"))
-        except ImportError:
+        else:
             # Unix systems
-            import select
-            import termios
-            import tty
-
             def is_data():
                 return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
 
