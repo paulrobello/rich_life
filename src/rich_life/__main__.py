@@ -95,6 +95,7 @@ class GameOfLife:
 
             self.ant_direction: int = 0  # 0: North, 1: East, 2: South, 3: West
 
+    # pylint: disable=too-many-branches
     def get_key(self) -> None:
         """
         Get the key pressed by the user in a non-blocking manner and handle it.
@@ -102,25 +103,23 @@ class GameOfLife:
         """
         try:
             import msvcrt
-            import sys
 
             if msvcrt.kbhit():
                 key = msvcrt.getch()
-                if key == b'\xe0':  # Arrow key prefix
+                if key == b"\xe0":  # Arrow key prefix
                     key = msvcrt.getch()
-                    if key == b'H':
+                    if key == b"H":
                         self.handle_key_press("up")
-                    elif key == b'P':
+                    elif key == b"P":
                         self.handle_key_press("down")
-                    elif key == b'K':
+                    elif key == b"K":
                         self.handle_key_press("left")
-                    elif key == b'M':
+                    elif key == b"M":
                         self.handle_key_press("right")
                 else:
-                    self.handle_key_press(key.decode('utf-8'))
+                    self.handle_key_press(key.decode("utf-8"))
         except ImportError:
             # Unix systems
-            import sys
             import select
             import termios
             import tty
@@ -133,18 +132,18 @@ class GameOfLife:
                 tty.setcbreak(sys.stdin.fileno())
                 if is_data():
                     key = sys.stdin.read(1)
-                    if key == '\x1b':  # ESC character
+                    if key == "\x1b":  # ESC character
                         if is_data():
                             key = sys.stdin.read(1)
-                            if key == '[':
+                            if key == "[":
                                 key = sys.stdin.read(1)
-                                if key == 'A':
+                                if key == "A":
                                     self.handle_key_press("up")
-                                elif key == 'B':
+                                elif key == "B":
                                     self.handle_key_press("down")
-                                elif key == 'C':
+                                elif key == "C":
                                     self.handle_key_press("right")
-                                elif key == 'D':
+                                elif key == "D":
                                     self.handle_key_press("left")
                     else:
                         self.handle_key_press(key)
