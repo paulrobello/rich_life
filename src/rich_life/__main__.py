@@ -105,8 +105,19 @@ class GameOfLife:
             import sys
 
             if msvcrt.kbhit():
-                key = msvcrt.getch().decode('utf-8')
-                self.handle_key_press(key)
+                key = msvcrt.getch()
+                if key == b'\xe0':  # Arrow key prefix
+                    key = msvcrt.getch()
+                    if key == b'H':
+                        self.handle_key_press("up")
+                    elif key == b'P':
+                        self.handle_key_press("down")
+                    elif key == b'K':
+                        self.handle_key_press("left")
+                    elif key == b'M':
+                        self.handle_key_press("right")
+                else:
+                    self.handle_key_press(key.decode('utf-8'))
         except ImportError:
             # Unix systems
             import sys
@@ -122,7 +133,21 @@ class GameOfLife:
                 tty.setcbreak(sys.stdin.fileno())
                 if is_data():
                     key = sys.stdin.read(1)
-                    self.handle_key_press(key)
+                    if key == '\x1b':  # ESC character
+                        if is_data():
+                            key = sys.stdin.read(1)
+                            if key == '[':
+                                key = sys.stdin.read(1)
+                                if key == 'A':
+                                    self.handle_key_press("up")
+                                elif key == 'B':
+                                    self.handle_key_press("down")
+                                elif key == 'C':
+                                    self.handle_key_press("right")
+                                elif key == 'D':
+                                    self.handle_key_press("left")
+                    else:
+                        self.handle_key_press(key)
             finally:
                 termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 
