@@ -97,6 +97,11 @@ To run the tests, use the following command:
 uv run pytest tests/test_game_of_life.py
 ```
 
+## What's New
+
+- Version 0.2.0: Better keyboard handling
+- Version 0.1.0: Initial release
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

@@ -10,6 +10,7 @@ import sys
 from enum import Enum
 from time import sleep
 from typing import Dict, Tuple, Optional
+import platform
 
 import typer
 from rich.console import Console
@@ -19,11 +20,11 @@ from rich.text import Text
 from rich import print as rprint
 
 # Import modules for key handling
-try:
+if platform.system() == "Windows":
     import msvcrt
-except ImportError:
+else:
     import select
-    import termios
+    import termios  # pylint: disable=import-error
     import tty
 
 console: Console = Console()
@@ -109,7 +110,8 @@ class GameOfLife:
         Get the key pressed by the user in a non-blocking manner and handle it.
         Works on both Windows and Unix systems.
         """
-        if 'msvcrt' in sys.modules:
+        if platform.system() == "Windows":
+            # Windows-specific key handling
             if msvcrt.kbhit():
                 key = msvcrt.getch()
                 if key == b"\xe0":  # Arrow key prefix
@@ -125,13 +127,14 @@ class GameOfLife:
                 else:
                     self.handle_key_press(key.decode("utf-8"))
         else:
-            # Unix systems
+            # Unix-specific key handling
             def is_data():
                 return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
 
-            old_settings = termios.tcgetattr(sys.stdin)
+            old_settings = termios.tcgetattr(sys.stdin)  # pyright: ignore
+            # pylint: disable=too-many-nested-blocks
             try:
-                tty.setcbreak(sys.stdin.fileno())
+                tty.setcbreak(sys.stdin.fileno())  # pyright: ignore
                 if is_data():
                     key = sys.stdin.read(1)
                     if key == "\x1b":  # ESC character
@@ -150,7 +153,9 @@ class GameOfLife:
                     else:
                         self.handle_key_press(key)
             finally:
-                termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+                termios.tcsetattr(  # pyright: ignore
+                    sys.stdin, termios.TCSADRAIN, old_settings  # pyright: ignore
+                )
 
     def get_neighbors_van_neumann(self, x: int, y: int) -> int:
         """
@@ -352,7 +357,7 @@ class GameOfLife:
 
         with Live(console=console, refresh_per_second=self.refresh_per_second) as live:
             for _ in range(generations):
-                self.get_key()  # Check for key presses
+                self.get_key()
                 if self.mode == SimulationMode.LIFE:
                     title = Text(
                         f"Conway's Game of Life: {self.display_width}x{self.display_height} - Rules: {self.rules.name} - Offset: {self.offset} - Infinite: {self.infinite_mode} - Gen: {self.generation} / {generations}",  # pylint: disable=line-too-long
