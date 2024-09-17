@@ -24,36 +24,6 @@ def_size = int(console.height / 2)
 
 app = typer.Typer()
 
-def get_key(self) -> None:
-    """
-    Get the key pressed by the user in a non-blocking manner and handle it.
-    Works on both Windows and Unix systems.
-    """
-    try:
-        import msvcrt
-        import sys
-
-        if msvcrt.kbhit():
-            key = msvcrt.getch().decode('utf-8')
-            self.handle_key_press(key)
-    except ImportError:
-        # Unix systems
-        import sys
-        import select
-        import termios
-        import tty
-
-        def is_data():
-            return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
-
-        old_settings = termios.tcgetattr(sys.stdin)
-        try:
-            tty.setcbreak(sys.stdin.fileno())
-            if is_data():
-                key = sys.stdin.read(1)
-                self.handle_key_press(key)
-        finally:
-            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 
 class NeighborhoodRules(str, Enum):
     """
@@ -122,7 +92,39 @@ class GameOfLife:
                 display_width // 2 + self.offset[0],
                 display_height // 2 + self.offset[1],
             )
+
             self.ant_direction: int = 0  # 0: North, 1: East, 2: South, 3: West
+
+    def get_key(self) -> None:
+        """
+        Get the key pressed by the user in a non-blocking manner and handle it.
+        Works on both Windows and Unix systems.
+        """
+        try:
+            import msvcrt
+            import sys
+
+            if msvcrt.kbhit():
+                key = msvcrt.getch().decode('utf-8')
+                self.handle_key_press(key)
+        except ImportError:
+            # Unix systems
+            import sys
+            import select
+            import termios
+            import tty
+
+            def is_data():
+                return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
+
+            old_settings = termios.tcgetattr(sys.stdin)
+            try:
+                tty.setcbreak(sys.stdin.fileno())
+                if is_data():
+                    key = sys.stdin.read(1)
+                    self.handle_key_press(key)
+            finally:
+                termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 
     def get_neighbors_van_neumann(self, x: int, y: int) -> int:
         """
