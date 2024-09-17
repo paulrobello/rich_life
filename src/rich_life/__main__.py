@@ -24,22 +24,18 @@ def_size = int(console.height / 2)
 
 app = typer.Typer()
 
-def get_key() -> Optional[str]:
+def get_key(self) -> None:
     """
-    Get the key pressed by the user in a non-blocking manner.
+    Get the key pressed by the user in a non-blocking manner and handle it.
     Works on both Windows and Unix systems.
-
-    Returns:
-        Optional[str]: The key pressed by the user, or None if no key was pressed.
     """
     try:
         import msvcrt
         import sys
 
         if msvcrt.kbhit():
-            key = msvcrt.getch()
-            return key.decode('utf-8')
-        return None
+            key = msvcrt.getch().decode('utf-8')
+            self.handle_key_press(key)
     except ImportError:
         # Unix systems
         import sys
@@ -55,8 +51,7 @@ def get_key() -> Optional[str]:
             tty.setcbreak(sys.stdin.fileno())
             if is_data():
                 key = sys.stdin.read(1)
-                return key
-            return None
+                self.handle_key_press(key)
         finally:
             termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 
@@ -327,10 +322,9 @@ class GameOfLife:
             generations (int): Number of generations to simulate. Defaults to 100.
         """
 
-
-
         with Live(console=console, refresh_per_second=self.refresh_per_second) as live:
             for _ in range(generations):
+                self.get_key()  # Check for key presses
                 if self.mode == SimulationMode.LIFE:
                     title = Text(
                         f"Conway's Game of Life: {self.display_width}x{self.display_height} - Rules: {self.rules.name} - Offset: {self.offset} - Infinite: {self.infinite_mode} - Gen: {self.generation} / {generations}",  # pylint: disable=line-too-long
