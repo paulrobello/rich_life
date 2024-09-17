@@ -11,7 +11,6 @@ from time import sleep
 from typing import Dict, Tuple, Optional
 
 import typer
-from keyboard import on_press
 from rich.console import Console
 from rich.live import Live
 from rich.table import Table
@@ -24,6 +23,23 @@ def_size = int(console.height / 2)
 
 app = typer.Typer()
 
+def get_key() -> Optional[bytes]:
+    """
+    Get the key pressed by the user.
+
+    Returns:
+        str: The key pressed by the user.
+    """
+    try:
+        import msvcrt
+
+
+        if msvcrt.kbhit():
+            return msvcrt.getch()
+        else:
+            return None
+    except Exception as _:  # pylint: disable=broad-except
+        return None
 
 class NeighborhoodRules(str, Enum):
     """
@@ -270,11 +286,11 @@ class GameOfLife:
                 row.append(f"[{color}]{neighbors}[/{color}]")
             rprint(" ".join(row))
 
-    def handle_key_press(self, event) -> None:
+    def handle_key_press(self, key) -> None:
         """
         Handle key presses and adjust the offset accordingly.
         """
-        key = event.name
+
         if key in ["w", "up"]:
             self.offset = (self.offset[0], self.offset[1] - 1)
         elif key in ["s", "down"]:
@@ -292,8 +308,7 @@ class GameOfLife:
             generations (int): Number of generations to simulate. Defaults to 100.
         """
 
-        # Set up the keyboard listener
-        on_press(self.handle_key_press)
+
 
         with Live(console=console, refresh_per_second=self.refresh_per_second) as live:
             for _ in range(generations):
