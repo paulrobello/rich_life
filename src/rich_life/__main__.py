@@ -67,6 +67,7 @@ class GameOfLife:
         offset: Optional[Tuple[int, int]] = None,
         mode: SimulationMode = SimulationMode.LIFE,
         refresh_per_second: int = 10,
+        follow: bool = False,
     ) -> None:
         """
         Initialize the simulation grid.
@@ -87,6 +88,7 @@ class GameOfLife:
         self.mode: SimulationMode = mode
         self.generation: int = 0
         self.refresh_per_second: int = refresh_per_second
+        self.follow: bool = follow
 
         if self.mode == SimulationMode.LIFE:
             self.grid: Dict[Tuple[int, int], int] = {
@@ -103,6 +105,9 @@ class GameOfLife:
             )
 
             self.ant_direction: int = 0  # 0: North, 1: East, 2: South, 3: West
+
+        if self.follow and self.mode == SimulationMode.ANTS:
+            self.update_offset_for_ant()
 
     # pylint: disable=too-many-branches
     def get_key(self) -> None:
@@ -282,6 +287,9 @@ class GameOfLife:
         dx, dy = [(0, -1), (1, 0), (0, 1), (-1, 0)][self.ant_direction]
         self.ant_position = (x + dx, y + dy)
 
+        if self.follow:
+            self.update_offset_for_ant()
+
         self.generation += 1
 
     def print_board_ascii(self) -> None:
@@ -346,6 +354,17 @@ class GameOfLife:
             self.offset = (self.offset[0] - 1, self.offset[1])
         elif key in ["d", "right"]:
             self.offset = (self.offset[0] + 1, self.offset[1])
+
+    def update_offset_for_ant(self) -> None:
+        """
+        Update the offset to keep the ant centered in the display.
+        """
+        center_x = self.display_width // 2
+        center_y = self.display_height // 2
+        self.offset = (
+            self.ant_position[0] - center_x,
+            self.ant_position[1] - center_y
+        )
 
     def run(self, generations: int = 100) -> None:
         """
@@ -416,6 +435,9 @@ def main(
     refresh_per_second: int = typer.Option(
         10, "--rps", "-r", help="Refresh rate per second"
     ),
+    follow: bool = typer.Option(
+        False, "--follow", "-f", help="Follow the ant in ANTS mode"
+    ),
 ):
     """
     Run Conway's Game of Life or Langton's Ant simulation with specified parameters.
@@ -428,6 +450,7 @@ def main(
         offset=(offset_x, offset_y),
         mode=mode,
         refresh_per_second=refresh_per_second,
+        follow=follow,
     )
     game.run(generations=generations)
 
