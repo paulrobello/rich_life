@@ -84,6 +84,7 @@ Available options:
 - `--offset-x` or `-x`: Bord display X-coordinate offset for infinite mode (default: 0)
 - `--offset-y` or `-y`: Bord display Y-coordinate offset for infinite mode (default: 0)
 - `--rps` or `-r`: Refresh / generations per second (default: 10)
+- `--follow` or `-f`: Follow the ant in ANTS mode (default: False)
 
 
 Keys:
