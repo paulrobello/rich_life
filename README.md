@@ -99,6 +99,7 @@ uv run pytest tests/test_game_of_life.py
 
 ## What's New
 
+- Version 0.3.0: Added follow mode for Langton's Ant
 - Version 0.2.0: Better keyboard handling
 - Version 0.1.0: Initial release
 
