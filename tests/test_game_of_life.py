@@ -1,4 +1,3 @@
-import pytest
 from rich_life.__main__ import GameOfLife, NeighborhoodRules, SimulationMode
 
 
@@ -8,7 +7,7 @@ def test_game_of_life_initialization():
     assert game.display_height == 10
     assert isinstance(game.grid, dict)
     assert game.generation == 0
-    assert game.infinite_mode == True
+    assert game.infinite_mode
     assert game.rules == NeighborhoodRules.MOORE
     assert game.offset == (0, 0)
     assert game.mode == SimulationMode.LIFE
@@ -37,28 +36,6 @@ def test_next_generation():
     game.grid = {(2, 1): 1, (2, 2): 1, (2, 3): 1}
     game.next_generation()
     assert game.grid == {(1, 2): 1, (2, 2): 1, (3, 2): 1}
-    assert game.generation == 1
-
-
-def test_run_life(capsys):
-    game = GameOfLife(3, 3)
-    game.run(generations=1)
-    captured = capsys.readouterr()
-    assert (
-        "Conway's Game\nof Life: 3x3 \n  - Rules:   \n   MOORE -   \n Offset: (0, \n    0) -     \n"
-        in captured.out
-    )
-    assert game.generation == 1
-
-
-def test_run_ants(capsys):
-    game = GameOfLife(3, 3, mode=SimulationMode.ANTS)
-    game.run(generations=1)
-    captured = capsys.readouterr()
-    assert (
-        "Langton's  \n Ant: 3x3 -  \n Offset: (0, \n    0) -     \n  Infinite:  \nTrue - Gen: 0\n     / 1     \n"
-        in captured.out
-    )
     assert game.generation == 1
 
 

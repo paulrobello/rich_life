@@ -20,7 +20,7 @@ Uses Rich for terminal visualization.
 
 ## Installation
 
-To install make sure you have Python 3.11 or higher and [uv](https://pypi.org/project/uv/) installed.
+To install make sure you have Python 3.11 or higher (tested with Python 3.13) and [uv](https://pypi.org/project/uv/) installed.
 
 ### Installation From Source
 
@@ -100,6 +100,7 @@ uv run pytest tests/test_game_of_life.py
 
 ## What's New
 
+- Version 0.3.1: Updated dependencies and ensured compatibility with Python 3.13
 - Version 0.3.0: Added follow mode for Langton's Ant
 - Version 0.2.0: Better keyboard handling
 - Version 0.1.0: Initial release
