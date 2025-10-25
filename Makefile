@@ -3,9 +3,8 @@
 lib    := rich_life
 run    := uv run
 python := $(run) python
-lint   := $(run) pylint
+ruff   := $(run) ruff
 pyright := $(run) pyright
-black  := $(run) black
 twine  := $(run) twine
 #build  := $(python) -m build
 build := uvx --from build pyproject-build --installer uv
@@ -52,8 +51,16 @@ shell:			# Start shell inside of .venv
 ##############################################################################
 # Checking/testing/linting/etc.
 .PHONY: lint
-lint:				# Run Pylint over the library
-	$(lint) $(lib)
+lint:				# Run ruff linter over the library
+	$(ruff) check .
+
+.PHONY: format
+format:				# Format code with ruff
+	$(ruff) format .
+
+.PHONY: format-check
+format-check:			# Check code formatting with ruff
+	$(ruff) format --check .
 
 .PHONY: typecheck
 typecheck:			# Perform static type checks with pyright
@@ -64,7 +71,7 @@ typecheck-stats:			# Perform static type checks with pyright and print stats
 	$(pyright) --stats
 
 .PHONY: checkall
-checkall: typecheck lint 	        # Check all the things
+checkall: format-check typecheck lint 	        # Check all the things
 
 .PHONY: pre-commit              # run pre-commit checks on all files
 pre-commit:
@@ -99,10 +106,6 @@ dist: packagecheck		# Upload to pypi
 
 ##############################################################################
 # Utility.
-
-.PHONY: ugly
-ugly:				# Reformat the code with black.
-	$(black) src/$(lib)
 
 .PHONY: repl
 repl:				# Start a Python REPL

@@ -159,7 +159,9 @@ class GameOfLife:
                         self.handle_key_press(key)
             finally:
                 termios.tcsetattr(  # pyright: ignore
-                    sys.stdin, termios.TCSADRAIN, old_settings  # pyright: ignore
+                    sys.stdin,
+                    termios.TCSADRAIN,  # pyright: ignore
+                    old_settings,  # pyright: ignore
                 )
 
     def get_neighbors_van_neumann(self, x: int, y: int) -> int:
@@ -180,9 +182,10 @@ class GameOfLife:
             if self.infinite_mode:
                 count += self.grid.get((nx, ny), 0)
             else:
-                nx, ny = (nx - self.offset[0]) % self.display_width + self.offset[0], (
-                    ny - self.offset[1]
-                ) % self.display_height + self.offset[1]
+                nx, ny = (
+                    (nx - self.offset[0]) % self.display_width + self.offset[0],
+                    (ny - self.offset[1]) % self.display_height + self.offset[1],
+                )
                 count += self.grid.get((nx, ny), 0)
         return count
 
@@ -207,9 +210,10 @@ class GameOfLife:
                 if self.infinite_mode:
                     count += self.grid.get((nx, ny), 0)
                 else:
-                    nx, ny = (nx - self.offset[0]) % self.display_width + self.offset[
-                        0
-                    ], (ny - self.offset[1]) % self.display_height + self.offset[1]
+                    nx, ny = (
+                        (nx - self.offset[0]) % self.display_width + self.offset[0],
+                        (ny - self.offset[1]) % self.display_height + self.offset[1],
+                    )
                     count += self.grid.get((nx, ny), 0)
         return count
 
@@ -361,10 +365,7 @@ class GameOfLife:
         """
         center_x = self.display_width // 2
         center_y = self.display_height // 2
-        self.offset = (
-            self.ant_position[0] - center_x,
-            self.ant_position[1] - center_y
-        )
+        self.offset = (self.ant_position[0] - center_x, self.ant_position[1] - center_y)
 
     def run(self, generations: int = 100) -> None:
         """
